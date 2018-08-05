@@ -414,13 +414,13 @@ class ListResource(Resource):
             resp, page = self.request("GET", self.uri, params=params)
 
             if self.key not in page:
-                raise StopIteration()
+                return
 
             for ir in page[self.key]:
                 yield self.load_instance(ir)
 
             if not page.get('next_page_uri', ''):
-                raise StopIteration()
+                return
 
             o = urlparse(page['next_page_uri'])
             params.update(parse_qs(o.query))
@@ -479,14 +479,14 @@ class NextGenListResource(ListResource):
             key = page.get('meta', {}).get('key')
 
             if key is None or key not in page:
-                raise StopIteration()
+                return
 
             for ir in page[key]:
                 yield self.load_instance(ir)
 
             url = page.get('meta', {}).get('next_page_url')
             if not url:
-                raise StopIteration()
+                return
 
     def get_instances(self, params):
         """
